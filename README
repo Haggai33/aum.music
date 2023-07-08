@@ -1,0 +1,48 @@
+Every weekend, I prepare an Instagram post that includes all the artists in my weekly playlist. Previously, I used various websites to export my playlist data to a CSV file. Then, I would manually copy the artist column to Notepad++, giving each artist a new line with the artist's IG profile on the next line, followed by a period ('.') on the next line for better visibility. This process was time-consuming, so I decided to automate it.
+
+After learning Python in a DevOps course, I created a script that automates this process, significantly reducing the time it takes.
+
+In the first version of my script, I simply exported all the artists to a .txt file. If the source artist column in the CSV file looked like this:
+----------------------------
+SYML,Charlotte Lawrence
+clarity.
+marinelli
+Poolside,Panama
+----------------------------
+The resulting .txt file would look like this:
+----------------------------
+**SYML
+@
+.
+Charlotte Lawrence
+@
+.
+clarity.
+@
+.
+marinelli
+@
+.
+Poolside
+@
+.
+Panama
+@
+.**
+----------------------------
+
+This **first version** helped to save time, but I wanted to enhance the process further.
+
+For the **second version**, I added a feature to check if the artist already existed in my database (a collection of artists I already follow on Instagram). This improvement saved me even more time, particularly for artists with common names like "Lu", which would have been difficult and time-consuming to locate manually.
+
+In the **third version**, I addressed the issue of duplicate artist entries from the same playlist. I used a set() to store all the artist names written to the file. Before writing a new artist's name, the script checks if the name is already in the set, thus avoiding unnecessary duplicates.
+
+I also added a feature to automatically open the resulting text file, making the script more user-friendly and saving even more time.
+
+With each new version, this script becomes more efficient and useful, demonstrating the power of Python in automating everyday tasks.
+
+
+
+requirement installs:
+
+
