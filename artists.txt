@@ -1,166 +1,101 @@
-SYML
-@symlmusic
+Nasrin Kadri
+@nasrinkadry
 .
-Charlotte Lawrence
-@charlotteslawrence .
+Sumbuck
+@sumbuck
 .
-clarity
-@
+Hilla Peer
+@hilla.peer
 .
-marinelli
-@marinelli
+Waldeck
+@waldeck_official
 .
-Poolside
-@poolside
+Patrizia Ferrara
+@patarasings
 .
-Panama
-@panamamusicofficial
+Roy Aharon
+@roy.aharon
 .
-Ömer Balık
-@omerbalikofficial
+Daily J
+@dailyjband
 .
-L'Impératrice
-@l.imperatrice
+Boo Seeka
+@booseeka
 .
-Cuco
-@cucopuffs
+Corina Smith
+@corinasmith
 .
-Eden Hason
-@edennhason
+Baby Tate
+@imbabytate
 .
-Yoav Lapid
-@Yoav_lapid
+Saweetie
+@saweetie
 .
-Yoshi
-@yoshi.this
+Kranium
+@kranium
 .
-Shazamat
-@Shazamat_crew
+Diamond Platnumz
+@diamondplatnumz
 .
-Eesah
-@eesahmusic
+Faydee
+@faydee
 .
-Groovewax
-@groovewax_music
+Mark Battles
+@markbattles317
 .
-Little Lion Sound
-@littlelionsound
+Futuristic
+@onlyfuturistic
 .
-Yung Gravy
-@yunggravy
+B. Cole
+@bcole206
 .
-bbno$
-@bbnomula
+Blaqbonez
+@blaqbonez
 .
-BABY GRAVY
-@
+Ludacris
+@ludacris
 .
-The Movement
-@themovementvibe
+Nerve
+@nerve.mp3
 .
-Slightly Stoopid
-@slightlystoopid
+Vin Jay
+@realvinjay
 .
-J Boog
-@jboogmusic
+Krizz Kaliko
+@krizzkaliko
 .
-Johnny Cosmic
-@johnnycosmic
+Julien Fade
+@julienfade
 .
-Noah Cronin
-@noah_cronin
+Casey Shirin
+@casey.shirin
 .
-Biga*Ranx
-@
+Haiku Hands
+@haikuhands
 .
-L'Entourloop
-@lentourloop
+Ribongia
+@ribongia
 .
-Mihali
-@mihalimusic
+CID
+@cidmusic
 .
-Collie Buddz
-@realcolliebuddz
+Sage Armstrong
+@sagearmstrong
 .
-Eli-Mac
-@eli_mac
+Jon.K
+@jon_k.music
 .
-Inna Vision
-@innavision
+Dylhen
+@djdylhen
 .
-Dj Whizo
-@djwhizo
-.
-Iya Terra
-@iyaterra
-.
-Dub Inc
-@dubincofficial
-.
-Little Stranger
-@littlestrangermusic
-.
-Ivan Ooze
-@ivanuzi
-.
-Yung Shogun
-@yungsta.shogun
-.
-Ekke
-@itsekke
-.
-Moeazy
-@moeazy_
-.
-MARU NARA
-@marunara_atua
-.
-Serena
-@_serenaofficial
-.
-Shakira
-@shakira
-.
-Manuel Turizo
-@manuelturizo
-.
-Agam Buhbut
-@agam__buhbut
-.
-Zeds Dead
-@zedsdead
-.
-Hamdi
-@hamdimusic
-.
-Warrior Queen
-@iwarriorqueeny
-.
-Gio Lucca
-@gioluccamusic
-.
-Kieran San Jose
-@kieransanjose
-.
-MD DJ
-@mddj.official
-.
-Dj Sava
-@djsava
-.
-Round Light
-@roundlightmusic
-.
-Go Freek
-@gofreek
-.
-Dope Earth Alien
-@dopeearthalien
-.
-FREAK ON
-@freakonmusic
+Morelia
+@moreliamusic
 .
 
-Total artists: 60
-Found IG artists: 51
-Not found IG artists: 3
+Total artists: 35
+Found IG artists: 31
+Not found IG artists: 0
+
+Duplicate artists:
+hilla peer: 3
+daily j: 3

@@ -1,5 +1,6 @@
 from oauth2client.service_account import ServiceAccountCredentials
 import os, csv, re, gspread
+from collections import defaultdict
 
 # Set up the credentials
 scope = ['https://spreadsheets.google.com/feeds',
@@ -38,6 +39,7 @@ aum_artist_values = aum_worksheet.col_values(1)[1:]  # Exclude header row
 aum_artist_values_lower = [item.lower() for item in aum_artist_values]  # Convert all to lowercase outside the loop
 
 written_artists = set()
+artist_counts = defaultdict(int)  # To count the occurrences of each artist
 
 if cell is not None:
     column_index = cell.col
@@ -79,10 +81,17 @@ if cell is not None:
                     file.write('.\n')
                     written_artists.add(a_lower)  # Add the lowercased, stripped artist name to the set
 
+                artist_counts[a_lower] += 1  # Increment the count for this artist
+
         file.write('\n')  # A line break before the statistics
         file.write(f"Total artists: {total_artists}\n")
         file.write(f"Found IG artists: {found_ig_artists}\n")
         file.write(f"Not found IG artists: {not_found_artists}\n")
+
+        file.write("\nDuplicate artists:\n")
+        for artist, count in artist_counts.items():
+            if count > 1:
+                file.write(f"{artist}: {count}\n")
 
     print(f"Total artists: {total_artists}")
     print(f"Found IG artists: {found_ig_artists}")
