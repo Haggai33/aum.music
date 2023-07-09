@@ -1,180 +1,166 @@
 SYML
-@
+@symlmusic
 .
 Charlotte Lawrence
-@
+@charlotteslawrence .
 .
-clarity.
+clarity
 @
 .
 marinelli
-@
+@marinelli
 .
 Poolside
-@
+@poolside
 .
 Panama
-@
+@panamamusicofficial
 .
 Ömer Balık
-@
+@omerbalikofficial
 .
 L'Impératrice
-@
+@l.imperatrice
 .
 Cuco
-@
+@cucopuffs
 .
 Eden Hason
-@
+@edennhason
 .
 Yoav Lapid
-@
+@Yoav_lapid
 .
 Yoshi
-@
+@yoshi.this
 .
 Shazamat
-@
+@Shazamat_crew
 .
 Eesah
-@
+@eesahmusic
 .
 Groovewax
-@
+@groovewax_music
 .
 Little Lion Sound
-@
+@littlelionsound
 .
 Yung Gravy
-@
+@yunggravy
 .
 bbno$
-@
+@bbnomula
 .
 BABY GRAVY
 @
 .
 The Movement
-@
+@themovementvibe
 .
 Slightly Stoopid
-@
+@slightlystoopid
 .
 J Boog
-@
+@jboogmusic
 .
 Johnny Cosmic
-@
+@johnnycosmic
 .
 Noah Cronin
-@
+@noah_cronin
 .
 Biga*Ranx
 @
 .
 L'Entourloop
-@
+@lentourloop
 .
 Mihali
-@
+@mihalimusic
 .
 Collie Buddz
-@
+@realcolliebuddz
 .
 Eli-Mac
-@
+@eli_mac
 .
 Inna Vision
-@
-.
-Collie Buddz
-@
+@innavision
 .
 Dj Whizo
-@
+@djwhizo
 .
 Iya Terra
-@
+@iyaterra
 .
 Dub Inc
-@
-.
-Collie Buddz
-@
+@dubincofficial
 .
 Little Stranger
-@
-.
-Collie Buddz
-@
+@littlestrangermusic
 .
 Ivan Ooze
-@
+@ivanuzi
 .
 Yung Shogun
-@
-.
-Yung Gravy
-@
-.
-bbno$
-@
-.
-BABY GRAVY
-@
+@yungsta.shogun
 .
 Ekke
-@
+@itsekke
 .
 Moeazy
-@
+@moeazy_
 .
 MARU NARA
-@
+@marunara_atua
 .
 Serena
-@
+@_serenaofficial
 .
 Shakira
-@
+@shakira
 .
 Manuel Turizo
-@
+@manuelturizo
 .
 Agam Buhbut
-@
+@agam__buhbut
 .
 Zeds Dead
-@
+@zedsdead
 .
 Hamdi
-@
+@hamdimusic
 .
 Warrior Queen
-@
+@iwarriorqueeny
 .
 Gio Lucca
-@
+@gioluccamusic
 .
 Kieran San Jose
-@
+@kieransanjose
 .
 MD DJ
-@
+@mddj.official
 .
 Dj Sava
-@
+@djsava
 .
 Round Light
-@
+@roundlightmusic
 .
 Go Freek
-@
+@gofreek
 .
 Dope Earth Alien
-@
+@dopeearthalien
 .
 FREAK ON
-@
+@freakonmusic
 .
+
+Total artists: 60
+Found IG artists: 51
+Not found IG artists: 3
