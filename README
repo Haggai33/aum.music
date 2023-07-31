@@ -44,5 +44,6 @@ With each new version, this script becomes more efficient and useful, demonstrat
 
 
 requirement installs:
-
+pip install oauth2client
+pip install gspread
 
