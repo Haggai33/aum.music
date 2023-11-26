@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import time
+import csv
 
 # Spotify API credentials
 CLIENT_ID = 'f8ad5b8eb68940b48b5dac24e5567e2b'
@@ -45,7 +46,13 @@ def smooth_scroll(driver, class_name):
     return False
 
 def scrape_artist_pages(driver, artists_info):
+    instagram_accounts = []
+    total_artists = 0
+    ig_found = 0
+    ig_not_found = 0
+
     for name, spotify_url in artists_info:
+        total_artists += 1
         print(f"Scraping for Artist: {name}, Spotify URL: {spotify_url}")
         if isinstance(spotify_url, str):
             driver.get(spotify_url)
@@ -57,20 +64,34 @@ def scrape_artist_pages(driver, artists_info):
         if smooth_scroll(driver, 'uhDzVbFHyCQDH6WrWZaC'):
             try:
                 # Wait and click on the element to reveal social media links
-                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'uhDzVbFHyCQDH6WrWZaC'))).click()
+                WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'uhDzVbFHyCQDH6WrWZaC'))).click()
 
                 # Wait and find Instagram link
-                instagram_link = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.oe0FHRJU7PvjoTnXJmfr[href*="instagram.com"]')))
+                instagram_link = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.oe0FHRJU7PvjoTnXJmfr[href*="instagram.com"]')))
                 instagram_url = instagram_link.get_attribute('href')
 
                 # Extract Instagram username from URL
                 instagram_username = instagram_url.split('instagram.com/')[-1].rstrip('/')
                 print(f"{name} Instagram: {instagram_username}")
+                instagram_accounts.append((name, instagram_username))
+                ig_found += 1
 
             except (NoSuchElementException, TimeoutException):
                 print(f"{name} - Element not found or Instagram link not available")
+                ig_not_found += 1
         else:
             print(f"{name} - Required element for revealing social media links not found")
+            ig_not_found += 1
+
+    return total_artists, ig_found, ig_not_found, instagram_accounts
+
+def export_to_csv(instagram_accounts):
+    file_path = 'C:\\Users\\Administrator\\Downloads\\instagram_accounts.csv'
+    with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Artist Name', 'Instagram Username'])
+        for account in instagram_accounts:
+            writer.writerow(account)
 
 def main():
     playlist_url = input("Enter the Spotify playlist URL: ")
@@ -80,7 +101,20 @@ def main():
     driver = webdriver.Chrome()
 
     try:
-        scrape_artist_pages(driver, artists_info)
+        total_artists, ig_found, ig_not_found, instagram_accounts = scrape_artist_pages(driver, artists_info)
+        print(f"\nTotal Artists: {total_artists}")
+        print(f"Instagram Accounts Found: {ig_found}")
+        print(f"Instagram Accounts Not Found: {ig_not_found}")
+
+        if instagram_accounts:
+            print("\nInstagram Accounts:")
+            for name, username in instagram_accounts:
+                print(f"{name}: {username}")
+
+            export_choice = input("\nDo you want to export the results to a CSV file? (yes/no): ").lower()
+            if export_choice == 'yes':
+                export_to_csv(instagram_accounts)
+                print("Exported to instagram_accounts.csv")
     finally:
         # Close the browser
         driver.quit()
