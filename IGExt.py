@@ -38,85 +38,61 @@ def get_playlist_artists(sp, playlist_url):
     return artists_info
 
 def smooth_scroll(driver, class_name):
-    for _ in range(10):  # Adjust the range as needed
+    for _ in range(10):
         driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.PAGE_DOWN)
-        time.sleep(1)  # Adjust sleep time as needed
+        time.sleep(1)
         if driver.find_elements(By.CLASS_NAME, class_name):
             return True
     return False
 
 def scrape_artist_pages(driver, artists_info):
-    instagram_accounts = []
-    total_artists = 0
-    ig_found = 0
-    ig_not_found = 0
-
+    instagram_accounts = {}
     for name, spotify_url in artists_info:
-        total_artists += 1
-        print(f"Scraping for Artist: {name}, Spotify URL: {spotify_url}")
-        if isinstance(spotify_url, str):
-            driver.get(spotify_url)
-        else:
-            print(f"Invalid URL for {name}")
-            continue
-
-        # Smoothly scroll to find the element
+        driver.get(spotify_url)
         if smooth_scroll(driver, 'uhDzVbFHyCQDH6WrWZaC'):
             try:
-                # Wait and click on the element to reveal social media links
-                WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'uhDzVbFHyCQDH6WrWZaC'))).click()
-
-                # Wait and find Instagram link
-                instagram_link = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.oe0FHRJU7PvjoTnXJmfr[href*="instagram.com"]')))
+                WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CLASS_NAME, 'uhDzVbFHyCQDH6WrWZaC'))).click()
+                instagram_link = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.oe0FHRJU7PvjoTnXJmfr[href*="instagram.com"]')))
                 instagram_url = instagram_link.get_attribute('href')
-
-                # Extract Instagram username from URL
-                instagram_username = instagram_url.split('instagram.com/')[-1].rstrip('/')
-                print(f"{name} Instagram: {instagram_username}")
-                instagram_accounts.append((name, instagram_username))
-                ig_found += 1
-
+                instagram_username = instagram_url.split('instagram.com/')[-1].split('/')[0].split('?')[0]
+                print(f"{name}: {instagram_username}")
+                key = (name, instagram_username)
             except (NoSuchElementException, TimeoutException):
-                print(f"{name} - Element not found or Instagram link not available")
-                ig_not_found += 1
+                print(f"{name}: None")
+                key = (name, "NONE")
+
+            instagram_accounts[key] = instagram_accounts.get(key, 0) + 1
         else:
-            print(f"{name} - Required element for revealing social media links not found")
-            ig_not_found += 1
+            print(f"{name}: None")
+            key = (name, "NONE")
+            instagram_accounts[key] = instagram_accounts.get(key, 0) + 1
 
-    return total_artists, ig_found, ig_not_found, instagram_accounts
+    return instagram_accounts
 
-def export_to_csv(instagram_accounts):
-    file_path = 'C:\\Users\\Administrator\\Downloads\\instagram_accounts.csv'
-    with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+def save_to_csv(instagram_accounts):
+    with open('C:\\Users\\Administrator\\Downloads\\instagram_accounts.csv', mode='w', newline='', encoding='utf-8-sig') as file:
         writer = csv.writer(file)
-        writer.writerow(['Artist Name', 'Instagram Username'])
-        for account in instagram_accounts:
-            writer.writerow(account)
+        writer.writerow(['Artist Name', 'Instagram Username', 'Count'])
+        for (name, username), count in instagram_accounts.items():
+            writer.writerow([name, username, count])
+
 
 def main():
     playlist_url = input("Enter the Spotify playlist URL: ")
     artists_info = get_playlist_artists(sp, playlist_url)
 
-    # Setup the Chrome WebDriver
     driver = webdriver.Chrome()
-
     try:
-        total_artists, ig_found, ig_not_found, instagram_accounts = scrape_artist_pages(driver, artists_info)
-        print(f"\nTotal Artists: {total_artists}")
-        print(f"Instagram Accounts Found: {ig_found}")
-        print(f"Instagram Accounts Not Found: {ig_not_found}")
+        instagram_accounts = scrape_artist_pages(driver, artists_info)
+        print(f"\nProcessed {len(artists_info)} artists.")
+        print(f"Found Instagram accounts for {len([acc for acc in instagram_accounts if acc[1] != 'NONE'])} artists.")
+        print(f"Instagram accounts not found for {len([acc for acc in instagram_accounts if acc[1] == 'NONE'])} artists.")
 
-        if instagram_accounts:
-            print("\nInstagram Accounts:")
-            for name, username in instagram_accounts:
-                print(f"{name}: {username}")
-
-            export_choice = input("\nDo you want to export the results to a CSV file? (yes/no): ").lower()
-            if export_choice == 'yes':
-                export_to_csv(instagram_accounts)
-                print("Exported to instagram_accounts.csv")
+        create_csv = input("Would you like to save the results to a CSV file? (y/n): ").lower()
+        if create_csv == 'y':
+            save_to_csv(instagram_accounts)
+            print("Instagram accounts saved to CSV file.")
     finally:
-        # Close the browser
         driver.quit()
 
 if __name__ == "__main__":
