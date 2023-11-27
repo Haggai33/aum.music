@@ -1,46 +1,21 @@
-Spotify Playlist Instagram Scraper
-This Python script allows you to scrape Instagram usernames of artists from a Spotify playlist. 
-It uses the Spotify Web API to fetch artist details from a given Spotify playlist URL and then 
-uses Selenium WebDriver to scrape Instagram usernames from each artist's Spotify page.
+Spotify Artist Scraper and Follower
+Overview
+This script is designed to interact with Spotify playlists, scrape artist information, check for Instagram accounts, and optionally follow artists on Spotify. It integrates with Google Sheets to cross-reference data and can export results to CSV and text files.
 
+Features
+Scrape Spotify Playlist: Extracts artist information from a given Spotify playlist URL.
+Instagram Account Search: Searches for Instagram accounts of artists and checks if they are already in a Google Sheet database.
+Follow Artists on Spotify: Offers an option to follow artists from the playlist on Spotify.
+Export Data: Saves the scraped data to CSV and text files, including a summary of found Instagram accounts and newly followed artists on Spotify.
+Usage Scenarios
+Extracting Artist Data: Input a Spotify playlist URL to get artist names and their Spotify URLs.
+Instagram Account Search: The script scrapes each artist's Spotify page for an Instagram account link. If not found, it checks a Google Sheet database for a match.
+Following Artists: You can choose to follow artists from the playlist who are not already followed on Spotify.
+Data Export: After processing, you have the option to save the data in CSV or text format. The text file includes a summary of total artists, found Instagram accounts, accounts found in the database, and accounts not found. It also lists newly followed artists on Spotify if that option was chosen.
 Requirements
-Python 3.x
-spotipy (Spotify Web API Python client)
-selenium (Web scraping tool)
-Chrome WebDriver (for Selenium)
-A Spotify Client ID and Client Secret
-Setup
-Install Required Python Libraries:
-
-bash
-Copy code
-pip install spotipy selenium
-Download Chrome WebDriver:
-Download the Chrome WebDriver from here and place it in a known directory.
-
-Spotify API Credentials:
-You need to have a Spotify Developer account. Create an app at Spotify Developer Dashboard to get your CLIENT_ID and CLIENT_SECRET.
-
-Usage
-Set Spotify API Credentials:
-Replace CLIENT_ID and CLIENT_SECRET in the script with your own credentials.
-
-Run the Script:
-Execute the script in your Python environment.
-
-bash
-Copy code
-python spotify_playlist_instagram_scraper.py
-Enter Spotify Playlist URL:
-When prompted, enter the full URL of the Spotify playlist you want to scrape.
-
-CSV File Generation:
-After the script finishes running, you will be asked if you want to save the results to a CSV file. Type 'y' for yes or 'n' for no.
-
-Output
-The script will output the Instagram usernames of the artists in the terminal. If you choose to save the results, a CSV file named instagram_accounts.csv will be created in the C:\Users\Administrator\Downloads directory. This file contains the artist names, their Instagram usernames, and the count of occurrences (useful for duplicate entries).
-
-Notes
-The script uses Selenium WebDriver to automate a web browser. Ensure that the version of Chrome WebDriver matches your Chrome browser's version.
-The script is configured for Windows paths. If you are using a different OS, please adjust the file paths accordingly.
-The script's performance and accuracy depend on the structure of the Spotify web pages. Any significant changes in their layout may require adjustments to the script.
+Python environment with necessary libraries (spotipy, selenium, gspread, etc.).
+Spotify API credentials.
+Google Sheets API setup with a service account.
+Chrome WebDriver for Selenium.
+Note
+Ensure all credentials and URLs are correctly set up in the script before running it. The script is interactive and will prompt for inputs and choices during execution.
