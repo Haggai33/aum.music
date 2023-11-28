@@ -1,3 +1,35 @@
++------------------+     +------------------+     +------------------+
+|                  |     |                  |     |                  |
+|  Spotify API     +----->  Google Sheets   +----->  Selenium for    |
+|  (spotipy)       |     |  (gspread)       |     |  Instagram       |
+|                  |     |                  |     |  (webdriver)     |
++---------+--------+     +---------+--------+     +---------+--------+
+          |                        |                        |
+          |                        |                        |
+          |                        |                        |
+          |                        |                        |
+          v                        v                        v
++---------+--------+     +---------+--------+     +---------+--------+
+|                  |     |                  |     |                  |
+| get_playlist_    |     | check_in_db      |     | scrape_artist_   |
+| artists          |     |                  |     | pages            |
+|                  |     |                  |     |                  |
++------------------+     +------------------+     +------------------+
+          |                        |                        |
+          |                        |                        |
+          |                        |                        |
+          |                        |                        |
+          v                        v                        v
++---------+--------+     +---------+--------+     +---------+--------+
+|                  |     |                  |     |                  |
+| save_to_csv      |     | save_to_text     |     | follow_new_      |
+|                  |     |                  |     | artists_in_      |
+|                  |     |                  |     | playlist         |
++------------------+     +------------------+     +------------------+
+
+
+
+
 README for Script Version 11.0 IG + WhatsApp
 Description:
 This Python script is designed to automate the process of gathering information about artists from a Spotify playlist, checking their presence in a Google Sheets database, and scraping their Instagram usernames from their Spotify artist pages. The script also generates formatted text and CSV files with the collected data for use in Instagram and WhatsApp communications.
