@@ -12,8 +12,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Spotify API credentials
-CLIENT_ID = ''
-CLIENT_SECRET = ''
+CLIENT_ID = 'f8ad5b8eb68940b48b5dac24e5567e2b'
+CLIENT_SECRET = 'e2966868aae44b078cb89b4f01577709'
 REDIRECT_URI = 'http://localhost:8888/callback'
 
 # Initialize Spotify API client
@@ -30,7 +30,29 @@ sheet = client.open_by_url(spreadsheet_url).worksheet("IG Artist")
 
 def get_playlist_artists(sp, playlist_url):
     playlist_id = playlist_url.split('/')[-1].split('?')[0]
-    results = sp.playlist_tracks(playlist_id)
+    playlist = sp.playlist(playlist_id)
+    playlist_name = playlist['name']
+    playlist_description = playlist.get('description', '')
+    releases_dates = "None"
+    genre = "None"
+
+    # Extract release dates from the description
+    if "Releases" in playlist_description:
+        try:
+            releases_dates = playlist_description.split("Releases")[0].strip()
+        except Exception as e:
+            print(f"Error extracting release dates: {e}")
+
+    # Extract genre from the description
+    try:
+        if "|" in playlist_description:
+            parts = playlist_description.split("|")
+            if len(parts) > 2:
+                genre = parts[1].strip()
+    except Exception as e:
+        print(f"Error extracting genre: {e}")
+
+    results = playlist['tracks']
     artists_info = []
 
     while results:
@@ -46,7 +68,7 @@ def get_playlist_artists(sp, playlist_url):
         else:
             break
 
-    return artists_info
+    return artists_info, playlist_name, releases_dates, genre
 
 def smooth_scroll(driver, class_name):
     for _ in range(10):
@@ -121,16 +143,53 @@ def save_to_csv(instagram_accounts):
         for (name, username, in_db), count in instagram_accounts.items():
             writer.writerow([name, username, count, in_db])
 
-def save_to_text(instagram_accounts, new_followed_artists=None):
+def save_to_text(instagram_accounts, playlist_number="None", playlist_name="None", releases_dates="None", genre="None", new_followed_artists=None):
     with open('C:\\Users\\Administrator\\Downloads\\instagram_accounts.txt', mode='w', encoding='utf-8') as file:
+
+        file.write("*ᗆum.Music*\n")
+        file.write(f"ᑭしᗩᎩしᏆᔑᎢ *{playlist_number}*\n")
+        file.write(f"彡 *{playlist_name}* 彡\n\n")
+        file.write(f"{releases_dates} Releases\n.\n")
+
+        # Format and write genre
+        genre_parts = genre.split("♩")
+        genre_formatted = "\n♩".join(genre_parts[1:])  # Add "♩" before each genre part
+        file.write(f"\n♩{genre_formatted}\n\n.\n")
+
+        file.write("*Spotify*\n\n\n")
+        file.write("*Apple Music*\n\n\n")
+        file.write("*YouTube*\n\n")
+        file.write(".\n📸*IG:* @\n")
+        file.write("אם בא לכם לעזור לי לקדם את הפרויקט\n")
+        file.write("אשמח שתוסיפו לי עוקב באינסטה,\n")
+        file.write("זה לוקח שנייה ועוזר לאלגוריתם להתעורר על צד ימין 🙏\n")
+        file.write("instagram.com/aum.music\n")
+        file.write("\n\n\n\n\n")
+
+        # IG Post
+        file.write(f"\n{releases_dates} Releases\n")
+        file.write(f"Week #{''.join(filter(str.isdigit, playlist_number))}\n")
+        file.write(f"彡 {playlist_name} 彡\n\n")  # Assuming playlist_name is already formatted as "彡 Name 彡"
+        file.write("Link in Bio\n.\n")
+        genre_formatted = "\n♩".join(genre_parts[1:])  # Add "♩" before each genre part
+        file.write(f"\n♩{genre_formatted}\n\n.\n")
+        file.write(".\n" * 3)
+        file.write("📸@\n")
+        file.write(".\n" * 5)  # 5 blank lines
+        file.write("#aummusic #aumusic\n")
+        file.write("#newmusicrelease #discovermusic #spotifyplaylists\n")
+        file.write("#newplaylist #discoverartists #spotifycharts\n")
+        file.write("\n" * 5)  # 5 blank lines
+
         total_artists = len(instagram_accounts)
         found = sum(1 for _, _, in_db in instagram_accounts if in_db == "Yes")
         found_in_db = sum(1 for _, _, in_db in instagram_accounts if in_db != 'No' and in_db != 'Yes')
         not_found = total_artists - found - found_in_db
         for (name, username, in_db), count in instagram_accounts.items():
-            # Use the username from the database if available
             username_to_write = username if username != 'NONE' else (in_db if in_db != 'No' else '')
             file.write(f"{name}\n@{username_to_write}\n.\n")
+
+        file.write("\n" * 5)  # 5 blank lines
         file.write(f"Total Artists: {total_artists}\nFound: {found}\nFound in DB: {found_in_db}\nNot Found: {not_found}\n")
 
         if new_followed_artists:
@@ -141,7 +200,19 @@ def save_to_text(instagram_accounts, new_followed_artists=None):
 
 def main():
     playlist_url = input("Enter the Spotify playlist URL: ")
-    artists_info = get_playlist_artists(sp, playlist_url)
+    artists_info, full_playlist_name, releases_dates, genre = get_playlist_artists(sp, playlist_url)  # Unpack four values
+
+    try:
+        # Reformat playlist name if it contains "彡"
+        if "彡" in full_playlist_name:
+            parts = full_playlist_name.split("彡")
+            # Remove empty strings and join the parts with "彡"
+            playlist_name = "彡" + "彡".join(part.strip() for part in parts if part.strip()) + "彡"
+        else:
+            playlist_name = full_playlist_name
+    except Exception as e:
+        print(f"Error processing playlist name: {e}")
+        playlist_name = "None"
 
     driver = webdriver.Chrome()
     try:
@@ -169,7 +240,9 @@ def main():
                 else:
                     print("You are already following all the artists in this playlist.")
 
-            save_to_text(instagram_accounts, new_artists)
+            save_to_text(instagram_accounts, playlist_number, playlist_name, releases_dates, genre,
+                         new_followed_artists=new_artists)
+
             print("Instagram accounts saved to text file.")
     finally:
         driver.quit()
@@ -226,7 +299,21 @@ def follow_new_artists_in_playlist(playlist_url):
 
 def main():
     playlist_url = input("Enter the Spotify playlist URL: ")
-    artists_info = get_playlist_artists(sp, playlist_url)
+    artists_info, full_playlist_name, releases_dates, genre = get_playlist_artists(sp, playlist_url)  # Unpack four values
+
+    # Process playlist name to extract name and number
+    try:
+        if "彡" in full_playlist_name:
+            parts = full_playlist_name.split("彡")
+            playlist_name = "" + parts[1].strip() + ""  # Assuming the name is always between 彡 symbols
+            playlist_number = parts[-1].strip()  # Assuming the number is after the last 彡
+        else:
+            playlist_name = full_playlist_name  # Default to the full name if 彡 not found
+            playlist_number = "None"
+    except Exception as e:
+        print(f"Error processing playlist name: {e}")
+        playlist_name = "None"
+        playlist_number = "None"
 
     driver = webdriver.Chrome()
     try:
@@ -243,21 +330,21 @@ def main():
 
         create_text = input("Would you like to save the results to a text file? (y/n): ").lower()
         if create_text == 'y':
-            save_to_text(instagram_accounts)
+            new_artists = None
+            follow_artists = input("Would you like to follow the artists from this playlist on Spotify? (y/n): ").lower()
+            if follow_artists == 'y':
+                new_artists = follow_new_artists_in_playlist(playlist_url)
+                if new_artists:
+                    print("New artists followed on Spotify:")
+                    for artist in new_artists:
+                        print(artist)
+                else:
+                    print("You are already following all the artists in this playlist.")
+
+            save_to_text(instagram_accounts, playlist_number, playlist_name, releases_dates, genre, new_followed_artists=new_artists)
+
+
             print("Instagram accounts saved to text file.")
-
-        follow_artists = input("Would you like to follow the artists from this playlist on Spotify? (y/n): ").lower()
-        if follow_artists == 'y':
-            new_artists = follow_new_artists_in_playlist(playlist_url)
-            if new_artists:
-                print("New artists followed on Spotify:")
-                for artist in new_artists:
-                    print(artist)
-            else:
-                print("You are already following all the artists in this playlist.")
-
-            # Save to text file including the new followed artists
-            save_to_text(instagram_accounts, new_artists)
     finally:
         driver.quit()
 
