@@ -1,4 +1,4 @@
-import spotipy
+import spotipy, logging, time, csv, gspread
 from spotipy.oauth2 import SpotifyOAuth
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -6,9 +6,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-import time
-import csv
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Spotify API credentials
@@ -27,6 +24,10 @@ client = gspread.authorize(creds)
 spreadsheet_url = "https://docs.google.com/spreadsheets/d/1j8jRlbBJi_6GREbj9vhlUvv6SQXAFkZp32M4WLy0Wkk"
 sheet = client.open_by_url(spreadsheet_url).worksheet("IG Artist")
 
+# Configure logging
+log_file_path = 'C:\\Users\\Administrator\\Downloads\\script_log.log'
+logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 def get_playlist_artists(sp, playlist_url):
     playlist_id = playlist_url.split('/')[-1].split('?')[0]
@@ -41,7 +42,7 @@ def get_playlist_artists(sp, playlist_url):
         try:
             releases_dates = playlist_description.split("Releases")[0].strip()
         except Exception as e:
-            print(f"Error extracting release dates: {e}")
+            logging.error(f"Error extracting release dates: {e}")
 
     # Extract genre from the description
     try:
@@ -122,10 +123,11 @@ def scrape_artist_pages(driver, artists_info):
                     instagram_username = "NONE"
                 print(f"{name}: {instagram_username} (In DB: {in_db})")
                 key = (name, instagram_username, in_db)
-            except (NoSuchElementException, TimeoutException):
+            except (NoSuchElementException, TimeoutException) as e:
                 in_db = check_in_db("NONE", name)
                 print(f"{name}: None (In DB: {in_db})")
                 key = (name, "NONE", in_db)
+                logging.warning(f"Element not found or timeout occurred: {e}")
 
             instagram_accounts[key] = instagram_accounts.get(key, 0) + 1
         else:
@@ -137,11 +139,20 @@ def scrape_artist_pages(driver, artists_info):
     return instagram_accounts
 
 def save_to_csv(instagram_accounts):
-    with open('C:\\Users\\Administrator\\Downloads\\instagram_accounts.csv', mode='w', newline='', encoding='utf-8-sig') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Artist Name', 'Instagram Username', 'Count', 'In DB'])
-        for (name, username, in_db), count in instagram_accounts.items():
-            writer.writerow([name, username, count, in_db])
+    csv_file_path = 'C:\\Users\\Administrator\\Downloads\\instagram_accounts.csv'
+    while True:
+        try:
+            with open(csv_file_path, mode='w', newline='', encoding='utf-8-sig') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Artist Name', 'Instagram Username', 'Count', 'In DB'])
+                for (name, username, in_db), count in instagram_accounts.items():
+                    writer.writerow([name, username, count, in_db])
+            logging.info("Instagram accounts successfully saved to CSV file.")
+            break  # Break out of the loop if file is successfully written
+        except PermissionError as e:
+            logging.error(f"PermissionError: Unable to write to the CSV file. Check if the file is open in your computer. Error: {e}")
+            print(f"PermissionError: Unable to write to the CSV file. Check if the file is open in your computer. Press Enter to retry.")
+            input()  # Wait for user input before retrying
 
 def save_to_text(instagram_accounts, playlist_number="None", playlist_name="None", releases_dates="None", genre="None", new_followed_artists=None):
     with open('C:\\Users\\Administrator\\Downloads\\instagram_accounts.txt', mode='w', encoding='utf-8') as file:
@@ -214,6 +225,7 @@ def main():
         print(f"Error processing playlist name: {e}")
         playlist_name = "None"
 
+
     driver = webdriver.Chrome()
     try:
         instagram_accounts = scrape_artist_pages(driver, artists_info)
@@ -242,10 +254,9 @@ def main():
 
             save_to_text(instagram_accounts, playlist_number, playlist_name, releases_dates, genre,
                          new_followed_artists=new_artists)
-
-            print("Instagram accounts saved to text file.")
     finally:
         driver.quit()
+
 
 def get_all_followed_artists():
     """Retrieve all artists the user is currently following."""
@@ -314,6 +325,8 @@ def main():
         print(f"Error processing playlist name: {e}")
         playlist_name = "None"
         playlist_number = "None"
+        logging.error(f"Error in main function: {e}")
+
 
     driver = webdriver.Chrome()
     try:
@@ -345,8 +358,12 @@ def main():
 
 
             print("Instagram accounts saved to text file.")
+
     finally:
         driver.quit()
 
+
 if __name__ == "__main__":
+    logging.info("Script started")
     main()
+    logging.info("Script finished")
