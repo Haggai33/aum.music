@@ -9,8 +9,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Spotify API credentials
-CLIENT_ID = 'f8ad5b8eb68940b48b5dac24e5567e2b'
-CLIENT_SECRET = 'e2966868aae44b078cb89b4f01577709'
+CLIENT_ID = '--'
+CLIENT_SECRET = '--'
 REDIRECT_URI = 'http://localhost:8888/callback'
 
 # Initialize Spotify API client
