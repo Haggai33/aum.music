@@ -1,6 +1,7 @@
 import spotipy, logging, time, csv, gspread
 from spotipy.oauth2 import SpotifyOAuth
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -8,24 +9,31 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from oauth2client.service_account import ServiceAccountCredentials
 
-# Spotify API credentials
-CLIENT_ID = '--'
-CLIENT_SECRET = '--'
-REDIRECT_URI = 'http://localhost:8888/callback'
 
-# Initialize Spotify API client
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri=REDIRECT_URI, scope='playlist-read-private user-follow-read user-follow-modify'))
+# Spotify API credentials
+CLIENT_ID = ''
+CLIENT_SECRET = ''
+REDIRECT_URI = 'http://localhost:8888/callback'
+driver = webdriver.Chrome()
+
 
 # Google Sheets setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('C:\\Aum.Music\\credentials.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('C:\\Users\\User\\PycharmProjects\\AumMusicTM\\venv\\Credentials.json', scope)
+
+# Initialize Spotify API client
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri=REDIRECT_URI, scope='playlist-read-private user-follow-read user-follow-modify'))
+
+
+creds = ServiceAccountCredentials.from_json_keyfile_name('C:\\Users\\User\\PycharmProjects\\AumMusicTM\\venv\\Credentials.json', scope)
 client = gspread.authorize(creds)
+
 spreadsheet_url = "https://docs.google.com/spreadsheets/d/1j8jRlbBJi_6GREbj9vhlUvv6SQXAFkZp32M4WLy0Wkk"
 sheet = client.open_by_url(spreadsheet_url).worksheet("IG Artist")
 
 # Configure logging
-log_file_path = 'C:\\Users\\Administrator\\Downloads\\script_log.log'
+log_file_path = 'C:\\Users\\user\\PycharmProjects\\AumMusicTM\\venv\\Logs\\script_log.log'
 logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
@@ -112,34 +120,40 @@ def scrape_artist_pages(driver, artists_info):
     instagram_accounts = {}
     for name, spotify_url in artists_info:
         driver.get(spotify_url)
-        if smooth_scroll(driver, 'uhDzVbFHyCQDH6WrWZaC'):
-            try:
-                WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CLASS_NAME, 'uhDzVbFHyCQDH6WrWZaC'))).click()
-                instagram_link = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.oe0FHRJU7PvjoTnXJmfr[href*="instagram.com"]')))
-                instagram_url = instagram_link.get_attribute('href')
-                instagram_username = instagram_url.split('instagram.com/')[-1].split('/')[0].split('?')[0]
-                in_db = check_in_db(instagram_username, name)
-                if in_db == "No":
+        try:
+            if smooth_scroll(driver, 'uhDzVbFHyCQDH6WrWZaC'):
+                WebDriverWait(driver, 2).until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, 'uhDzVbFHyCQDH6WrWZaC'))).click()
+                try:
+                    # מחפש קישור שמכיל את הטקסט "instagram.com/" בתוך ה-`href`
+                    instagram_link = WebDriverWait(driver, 2).until(
+                        EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, 'a.oe0FHRJU7PvjoTnXJmfr[href*="instagram.com"]'))
+                    )
+                    instagram_url = instagram_link.get_attribute('href')
+                    instagram_username = instagram_url.split('instagram.com/')[-1].split('/')[0].split('?')[0]
+                except NoSuchElementException:
                     instagram_username = "NONE"
-                print(f"{name}: {instagram_username} (In DB: {in_db})")
-                key = (name, instagram_username, in_db)
-            except (NoSuchElementException, TimeoutException) as e:
-                in_db = check_in_db("NONE", name)
-                print(f"{name}: None (In DB: {in_db})")
-                key = (name, "NONE", in_db)
-                logging.warning(f"Element not found or timeout occurred: {e}")
+            else:
+                instagram_username = "NONE"
 
-            instagram_accounts[key] = instagram_accounts.get(key, 0) + 1
-        else:
-            in_db = check_in_db("NONE", name)
+            in_db = check_in_db(instagram_username, name)
+            print(f"{name}: {instagram_username} (In DB: {in_db})")
+            key = (name, instagram_username, in_db)
+
+        except (NoSuchElementException, TimeoutException) as e:
+            instagram_username = "NONE"
+            in_db = check_in_db(instagram_username, name)
             print(f"{name}: None (In DB: {in_db})")
-            key = (name, "NONE", in_db)
-            instagram_accounts[key] = instagram_accounts.get(key, 0) + 1
+            key = (name, instagram_username, in_db)
+            logging.warning(f"Element not found or timeout occurred: {e}")
+
+        instagram_accounts[key] = instagram_accounts.get(key, 0) + 1
 
     return instagram_accounts
 
 def save_to_csv(instagram_accounts):
-    csv_file_path = 'C:\\Users\\Administrator\\Downloads\\instagram_accounts.csv'
+    csv_file_path = 'C:\\Users\\user\\Downloads\\instagram_accounts.csv'
     while True:
         try:
             with open(csv_file_path, mode='w', newline='', encoding='utf-8-sig') as file:
@@ -155,7 +169,7 @@ def save_to_csv(instagram_accounts):
             input()  # Wait for user input before retrying
 
 def save_to_text(instagram_accounts, playlist_number="None", playlist_name="None", releases_dates="None", genre="None", new_followed_artists=None):
-    with open('C:\\Users\\Administrator\\Downloads\\instagram_accounts.txt', mode='w', encoding='utf-8') as file:
+    with open('C:\\Users\\user\\Downloads\\instagram_accounts.txt', mode='w', encoding='utf-8') as file:
 
         file.write("*ᗆum.Music*\n")
         file.write(f"ᑭしᗩᎩしᏆᔑᎢ *{playlist_number}*\n")
@@ -168,7 +182,6 @@ def save_to_text(instagram_accounts, playlist_number="None", playlist_name="None
         file.write(f"\n♩{genre_formatted}\n\n.\n")
 
         file.write("*Spotify*\n\n\n")
-        file.write("*Apple Music*\n\n\n")
         file.write("*YouTube*\n\n")
         file.write(".\n📸*IG:* @\n")
         file.write("אם בא לכם לעזור לי לקדם את הפרויקט\n")
@@ -178,12 +191,15 @@ def save_to_text(instagram_accounts, playlist_number="None", playlist_name="None
         file.write("\n\n\n\n\n")
 
         # IG Post
+        file.write("🎶 Last Week’s Releases: Top New Tracks! 🌟")
         file.write(f"\n{releases_dates} Releases\n")
         file.write(f"Week #{''.join(filter(str.isdigit, playlist_number))}\n")
         file.write(f"彡 {playlist_name} 彡\n\n")  # Assuming playlist_name is already formatted as "彡 Name 彡"
         file.write("Link in Bio\n.\n")
         genre_formatted = "\n♩".join(genre_parts[1:])  # Add "♩" before each genre part
         file.write(f"\n♩{genre_formatted}\n\n.\n")
+        file.write(".\n" * 3)
+        file.write("Artist’s in playlist:\n")
         file.write(".\n" * 3)
         file.write("📸@\n")
         file.write(".\n" * 5)  # 5 blank lines
